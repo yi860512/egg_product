@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "577770039680",
+    "firebase_url": "https://egg-project-15cf6.firebaseio.com",
+    "project_id": "egg-project-15cf6",
+    "storage_bucket": "egg-project-15cf6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:577770039680:android:42cbfc6462573332373965",
+        "android_client_info": {
+          "package_name": "yi.yi_860512.egg_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "577770039680-et12h8u6faubc7ej2b58acj7e9ilfb8j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "yi.yi_860512.egg_project",
+            "certificate_hash": "4c38f08d328d19fba02426b3df8e6aa5ebaf2976"
+          }
+        },
+        {
+          "client_id": "577770039680-30h5ut6t63ffa5sb861pe0hjju1m1bpf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCOFDHCn6kNGezxgiRNQpdSLuOsDbonx04"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "577770039680-30h5ut6t63ffa5sb861pe0hjju1m1bpf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
