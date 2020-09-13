@@ -3,23 +3,20 @@ package yi.yi_860512.egg_project.Model;
 public class Cust {
     private String name;
     private String id;
-    private String price;
     private String gmail;
     private String phone;
     private String address;
 
-    public Cust(String name, String id, String price, String gmail, String phone,String address) {
+    public Cust(String name, String id, String gmail, String phone,String address) {
         this.name = name;
         this.address = address;
         this.id = id;
-        this.price = price;
         this.gmail = gmail;
         this.phone = phone;
     }
 
-    public Cust(String name, String price, String gmail, String phone,String address) {
+    public Cust(String name, String gmail, String phone,String address) {
         this.name = name;
-        this.price = price;
         this.gmail = gmail;
         this.phone = phone;
         this.address = address;
@@ -45,14 +42,6 @@ public class Cust {
 
     public String getGmail() {
         return this.gmail;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getPrice() {
-        return this.price;
     }
 
     public void setName(String name) {

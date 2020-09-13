@@ -11,7 +11,6 @@ public class Config {
     private String ProNameLocalTmp = "proNameLocalTmp";
     private String ProPriceLocalTmp = "proPriceLocalTmp";
     private String CustNameLocalTmp = "custNameLocalTmp";
-    private String CustPriceLocalTmp = "custPriceLocalTmp";
     private String CustGmailLocalTmp = "custGmailLocalTmp";
     private String CustPhoneLocalTmp = "custPhoneLocalTmp";
     private String CustAddressLocalTmp = "custAddressLocalTmp";
@@ -55,10 +54,9 @@ public class Config {
         return sp.getString(PASSWORD, "123456789");
     }
 
-    public void setCustLocalTmp(String custName, String custPrice, String gmail, String phone,String address,String teamId) {
+    public void setCustLocalTmp(String custName, String gmail, String phone,String address,String teamId) {
         SharedPreferences.Editor edit = sp.edit();
         edit.putString(CustNameLocalTmp, custName);
-        edit.putString(CustPriceLocalTmp, custPrice);
         edit.putString(CustGmailLocalTmp, gmail);
         edit.putString(CustPhoneLocalTmp, phone);
         edit.putString(CustAddressLocalTmp, address);
@@ -79,9 +77,6 @@ public class Config {
 
     public String getCustAddressLocalTmp() {
         return sp.getString(CustAddressLocalTmp, "");
-    }
-    public String getCustPriceLocalTmp() {
-        return sp.getString(CustPriceLocalTmp, "");
     }
     public String getCustGmailLocalTmp() {
         return sp.getString(CustGmailLocalTmp, "");

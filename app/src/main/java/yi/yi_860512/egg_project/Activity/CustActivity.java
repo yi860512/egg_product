@@ -42,7 +42,6 @@ public class CustActivity extends BaseActivity {
     private LinkedList<Cust> list;
     private LinkedList<String> CustIdList;
     private LinkedList<String> CustNameList;
-    private LinkedList<String> CustPriceList;
     private LinkedList<String> CustGmailList;
     private LinkedList<String> CustPhoneList;
     private LinkedList<String> CustAddressList;
@@ -76,12 +75,10 @@ public class CustActivity extends BaseActivity {
         public View getView(int position, View convertView, ViewGroup parent) {
             View v = inflater.inflate(R.layout.item_list_cust, parent, false);//版面,群組為parent參數,最後一個都用false
             TextView tvName = v.findViewById(R.id.custName);
-            TextView tvPrice = v.findViewById(R.id.custPrice);
             TextView tvPhone = v.findViewById(R.id.custPhone);
             TextView tvGmail = v.findViewById(R.id.custGmail);
             TextView tvAddress = v.findViewById(R.id.custAddress);
             tvName.setText(list.get(position).getName());
-            tvPrice.setText(list.get(position).getPrice());
             tvPhone.setText(list.get(position).getPhone());
             tvGmail.setText(list.get(position).getGmail());
             tvAddress.setText(list.get(position).getAddress());
@@ -96,7 +93,6 @@ public class CustActivity extends BaseActivity {
         teamId = intent.getStringExtra("team");
         CustNameList = new LinkedList<>();
         CustIdList = new LinkedList<>();
-        CustPriceList = new LinkedList<>();
         CustGmailList = new LinkedList<>();
         CustPhoneList = new LinkedList<>();
         CustAddressList = new LinkedList<>();
@@ -158,7 +154,6 @@ public class CustActivity extends BaseActivity {
         dialog.setCancelable(false);
         dialog.setView(v);
         final EditText editCustName = v.findViewById(R.id.custName);
-        final EditText editCustPrice = v.findViewById(R.id.custPrice);
         final EditText editCustGmail = v.findViewById(R.id.custGmail);
         final EditText editCustPhone = v.findViewById(R.id.custPhone);
         final EditText editCustAddress = v.findViewById(R.id.custAddress);
@@ -173,7 +168,6 @@ public class CustActivity extends BaseActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String CustName = editCustName.getText().toString();
-                String CustPrice = editCustPrice.getText().toString();
                 String CustGmail = editCustGmail.getText().toString();
                 String CustPhone = editCustPhone.getText().toString();
                 String CustAddress = editCustAddress.getText().toString();
@@ -182,7 +176,7 @@ public class CustActivity extends BaseActivity {
                 } else {
                     custInit();
                     Toast.makeText(CustActivity.this, "新增成功", Toast.LENGTH_SHORT).show();
-                    CustSaveToCloud(CustName, CustPrice, CustGmail, CustPhone, CustAddress, teamId);
+                    CustSaveToCloud(CustName, CustGmail, CustPhone, CustAddress, teamId);
                 }
             }
         });
@@ -193,7 +187,6 @@ public class CustActivity extends BaseActivity {
         list.clear();
         CustNameList.clear();
         CustIdList.clear();
-        CustPriceList.clear();
         CustGmailList.clear();
         CustPhoneList.clear();
         CustAddressList.clear();
@@ -206,15 +199,13 @@ public class CustActivity extends BaseActivity {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 String n = document.get("name").toString();
-                                String p = document.getData().get("price").toString();
                                 String g = document.getData().get("gmail").toString();
                                 String ph = document.getData().get("phone").toString();
                                 String a = document.getData().get("address").toString();
-                                Cust cust = new Cust(n, p, g, ph, a);
+                                Cust cust = new Cust(n, g, ph, a);
                                 list.add(cust);
                                 CustNameList.add(n);
                                 CustIdList.add(document.getId());
-                                CustPriceList.add(p);
                                 CustGmailList.add(g);
                                 CustPhoneList.add(ph);
                                 CustAddressList.add(a);
@@ -237,7 +228,6 @@ public class CustActivity extends BaseActivity {
         dialog.setTitle("資訊變更");
         dialog.setMessage("請選擇客戶");
         final Spinner spinner = v.findViewById(R.id.spinner);
-        final EditText CPr = v.findViewById(R.id.ChangePrice);
         final EditText CGm = v.findViewById(R.id.ChangeGmail);
         final EditText CPh = v.findViewById(R.id.ChangePhone);
         final EditText CAd = v.findViewById(R.id.ChangeAddress);
@@ -247,7 +237,6 @@ public class CustActivity extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 ChosePosition[0] = position;
-                CPr.setText(CustPriceList.get(position));
                 CGm.setText(CustGmailList.get(position));
                 CPh.setText(CustPhoneList.get(position));
                 CAd.setText(CustAddressList.get(position));
@@ -268,23 +257,20 @@ public class CustActivity extends BaseActivity {
         dialog.setPositiveButton("確定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String ChangePrice = CPr.getText().toString();
                 String ChangeGmail = CGm.getText().toString();
                 String ChangePhone = CPh.getText().toString();
                 String ChangeAddress = CAd.getText().toString();
-                if (ChangePrice.equals("") || ChangeGmail.equals("") ||
-                        ChangePhone.equals("") || ChangeAddress.equals("")) {
+                if (ChangeGmail.equals("") || ChangePhone.equals("") || ChangeAddress.equals("")) {
                     dialog.cancel();
                     Toast.makeText(CustActivity.this, "有空白未輸入", Toast.LENGTH_SHORT).show();
                 } else {
-                    Map<String, Object> cust2 = new HashMap<>();
-                    cust2.put("name", spinner.getSelectedItem().toString());
-                    cust2.put("price", ChangePrice);
-                    cust2.put("gmail", ChangeGmail);
-                    cust2.put("phone", ChangePhone);
-                    cust2.put("address", ChangeAddress);
-                    cust2.put("teamId", teamId);
-                    firebaseFirestore.collection("cust").document(CustIdList.get(ChosePosition[0])).set(cust2)
+                    Map<String, Object> cust = new HashMap<>();
+                    cust.put("name", spinner.getSelectedItem().toString());
+                    cust.put("gmail", ChangeGmail);
+                    cust.put("phone", ChangePhone);
+                    cust.put("address", ChangeAddress);
+                    cust.put("teamId", teamId);
+                    firebaseFirestore.collection("cust").document(CustIdList.get(ChosePosition[0])).set(cust)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {

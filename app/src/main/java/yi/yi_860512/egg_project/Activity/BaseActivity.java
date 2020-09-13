@@ -79,9 +79,9 @@ public abstract class BaseActivity extends AppCompatActivity {
                     }
                     String tmpCustName = config.getCustNameLocalTmp();
                     if (!tmpCustName.equals("")) {
-                        returnPushCust(tmpCustName, config.getCustPriceLocalTmp(),
+                        returnPushCust(tmpCustName,
                                 config.getCustGmailLocalTmp(), config.getCustPhoneLocalTmp(),
-                                config.getCustAddressLocalTmp(),config.getTeamIdLocalTmp());
+                                config.getCustAddressLocalTmp(), config.getTeamIdLocalTmp());
                     }
                     String tmpTeamName = config.getTeamCustLocalTmp();
                     if (!tmpTeamName.equals("")) {
@@ -100,9 +100,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     //重新上傳產品資訊
-    private void returnPushCust(String tmpName, String tmpPrice, String tmpGmail,
-                                String tmpPhone, String address,String teamid) {
-        CustSaveToCloud(tmpName, tmpPrice, tmpGmail, tmpPhone, address,teamid);
+    private void returnPushCust(String tmpName, String tmpGmail,
+                                String tmpPhone, String address, String teamid) {
+        CustSaveToCloud(tmpName, tmpGmail, tmpPhone, address, teamid);
     }
 
     //重新上傳產品資訊
@@ -133,13 +133,11 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     //上傳客戶到firebase
-    public void CustSaveToCloud(final String CustName, final String CustPrice,
-                                final String CustGmail, final String CustPhone,
-                                final String CustAddress,final String teamId) {
-        CustSaveToLocal(CustName, CustPrice, CustGmail, CustPhone, CustAddress,teamId);
+    public void CustSaveToCloud(final String CustName, final String CustGmail, final String CustPhone,
+                                final String CustAddress, final String teamId) {
+        CustSaveToLocal(CustName, CustGmail, CustPhone, CustAddress, teamId);
         Map<String, Object> cust = new HashMap<>();
         cust.put("name", CustName);
-        cust.put("price", CustPrice);
         cust.put("gmail", CustGmail);
         cust.put("phone", CustPhone);
         cust.put("address", CustAddress);
@@ -155,7 +153,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        returnPushCust(CustName, CustPrice, CustGmail, CustPhone, CustAddress,teamId);
+                        returnPushCust(CustName, CustGmail, CustPhone, CustAddress, teamId);
                     }
                 });
     }
@@ -233,13 +231,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     //新增config產品資訊
-    public void CustSaveToLocal(String custName, String custPrice, String gmail, String phone, String address,String teamid) {
-        config.setCustLocalTmp(custName, custPrice, gmail, phone, address,teamid);
+    public void CustSaveToLocal(String custName, String gmail, String phone, String address, String teamid) {
+        config.setCustLocalTmp(custName, gmail, phone, address, teamid);
     }
 
     //刪除config的產品暫存
     public void CustDeleteLocal() {
-        config.setCustLocalTmp("", "", "", "", "","");
+        config.setCustLocalTmp("", "", "", "", "");
     }
 
     //新增config CustTeam資訊
