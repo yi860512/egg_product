@@ -20,14 +20,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import yi.yi_860512.egg_project.Model.Cust;
+import yi.yi_860512.egg_project.Model.Price;
 import yi.yi_860512.egg_project.R;
 import yi.yi_860512.egg_project.library.Config;
 
@@ -122,6 +128,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         ProductDeleteLocal();
+                        AddPriceTable("PtoC", documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -130,6 +137,45 @@ public abstract class BaseActivity extends AppCompatActivity {
                         returnPushPro(EdProName, EdProPrice);
                     }
                 });
+    }
+
+    private void AddPriceTable(String howFun, final String id) {
+        if (howFun.equals("PtoC")) {
+            firebaseFirestore.collection("cust")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    Price price = new Price(document.getId(), id, "0");
+                                    firebaseFirestore.collection("price").add(price);
+                                }
+                            } else {
+                                Log.v("show", "Error getting documents: ", task.getException());
+                            }
+                        }
+
+                    });
+        } else if (howFun.equals("CtoP")) {
+            firebaseFirestore.collection("product")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    //用class增加欄位
+                                    Price price = new Price(id, document.getId(), "0");
+                                    firebaseFirestore.collection("price").add(price);
+                                }
+                            } else {
+                                Log.v("show", "Error getting documents: ", task.getException());
+                            }
+                        }
+
+                    });
+        }
     }
 
     //上傳客戶到firebase
@@ -148,6 +194,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         CustDeleteLocal();
+                        AddPriceTable("CtoP", documentReference.getId());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
