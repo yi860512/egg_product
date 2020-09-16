@@ -24,6 +24,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -33,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import yi.yi_860512.egg_project.Model.Cust;
+import yi.yi_860512.egg_project.Model.Price;
 import yi.yi_860512.egg_project.Model.Product;
 import yi.yi_860512.egg_project.R;
 
@@ -46,6 +49,8 @@ public class CustActivity extends BaseActivity {
     private LinkedList<String> CustPhoneList;
     private LinkedList<String> CustAddressList;
     private String teamId = "";
+    private String productId = "";
+    private LinkedList<String> proNameList;
 
     private class MyAdapter extends BaseAdapter {
         private LayoutInflater inflater;
@@ -101,6 +106,23 @@ public class CustActivity extends BaseActivity {
         mAdapter = new MyAdapter();
         mListView.setAdapter(mAdapter);
         custInit();
+        proNameList = new LinkedList<>();
+        productIdInit();
+    }
+
+    private void productIdInit() {
+        firebaseFirestore.collection("product")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                proNameList.add(document.get("name").toString());
+                            }
+                        }
+                    }
+                });
     }
 
     @Override
@@ -108,6 +130,98 @@ public class CustActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cust);
         initParam();
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int[] ChoseCustPosition = {position};
+                AlertDialog.Builder dialog = new AlertDialog.Builder(CustActivity.this);
+                final View v = getLayoutInflater().inflate(R.layout.item_change_price, null);
+                dialog.setCancelable(false);
+                dialog.setTitle("價格變更");
+                dialog.setMessage("請選擇產品");
+                final Spinner spinner = v.findViewById(R.id.spinner);
+                final EditText editText = v.findViewById(R.id.ChangePrice);
+                ArrayAdapter<String> listAdapter = new ArrayAdapter<String>(
+                        CustActivity.this, R.layout.item_spinners, proNameList);
+                spinner.setAdapter(listAdapter);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        showCirCle("讀取資料","資料讀取中...");
+                        firebaseFirestore.collection("product")
+                                .whereEqualTo("name", spinner.getSelectedItem().toString())
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                                productId = document.getId();
+                                            }
+                                            firebaseFirestore.collection("price")
+                                                    .whereEqualTo("cid", CustIdList.get(ChoseCustPosition[0]))
+                                                    .whereEqualTo("pid", productId)
+                                                    .get()
+                                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                        @Override
+                                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                            if (task.isSuccessful()) {
+                                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                                    editText.setText(document.get("price").toString());
+                                                                }
+                                                            }
+                                                            disCirCle();
+                                                        }
+                                                    });
+                                        }
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
+                dialog.setCancelable(false);
+                dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                dialog.setPositiveButton("確定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final String ChangePrice = editText.getText().toString();
+                        if (ChangePrice.equals("")) {
+                            dialog.cancel();
+                            Toast.makeText(CustActivity.this, "未輸入價格", Toast.LENGTH_SHORT).show();
+                        } else {
+                            final String[] priceId = {""};
+                            firebaseFirestore.collection("price")
+                                    .whereEqualTo("cid", CustIdList.get(ChoseCustPosition[0]))
+                                    .whereEqualTo("pid", productId)
+                                    .get()
+                                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                            if (task.isSuccessful()) {
+                                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                                    priceId[0] = document.getId();
+                                                    Price price = new Price(CustIdList.get(ChoseCustPosition[0]), productId, ChangePrice);
+                                                    firebaseFirestore.collection("price").document(priceId[0]).set(price);
+                                                }
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                });
+                dialog.setView(v);
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+            }
+        });
         mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {

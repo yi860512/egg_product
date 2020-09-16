@@ -64,18 +64,28 @@ public abstract class BaseActivity extends AppCompatActivity {
         return isConnected;
     }
 
+    public void showCirCle(String title, String msg) {
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle(title);
+        progressDialog.setMessage(msg);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+
+    public void disCirCle() {
+        progressDialog.cancel();
+        progressDialog.dismiss();
+        progressDialog = null;
+    }
+
     //網路斷線檢測
     private class MyReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.v("show", isConnected() + "");
             if (!isConnected()) {
-                progressDialog = new ProgressDialog(context);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDialog.setTitle("網路斷線");
-                progressDialog.setMessage("重新連線中...");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
+                showCirCle("網路斷線", "重新連線中...");
             } else {
                 if (progressDialog != null) {
                     //將Product資料上傳到FireBase
@@ -93,8 +103,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                     if (!tmpTeamName.equals("")) {
                         returnPushTeam(tmpTeamName);
                     }
-                    progressDialog.dismiss();
-                    progressDialog = null;
+                    disCirCle();
                 }
             }
         }
@@ -173,7 +182,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                                 Log.v("show", "Error getting documents: ", task.getException());
                             }
                         }
-
                     });
         }
     }
