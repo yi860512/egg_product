@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.CustTeamActivity"></activity>
+        <activity android:name=".Activity.SendActivity"></activity>
+        <activity android:name=".Activity.CustTeamActivity" />
         <activity android:name=".Activity.CustActivity" />
         <activity android:name=".Activity.ProductActivity" />
         <activity android:name=".Activity.SetActivity" />

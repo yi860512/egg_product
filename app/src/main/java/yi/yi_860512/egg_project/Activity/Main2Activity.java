@@ -1,5 +1,6 @@
 package yi.yi_860512.egg_project.Activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +22,7 @@ public class Main2Activity extends BaseActivity {
     }
 
     public void SET(View view) {
-        Intent intent = new Intent(this,SetActivity.class);
+        Intent intent = new Intent(this, SetActivity.class);
         startActivity(intent);
     }
 
@@ -31,5 +32,9 @@ public class Main2Activity extends BaseActivity {
 
     public void SetCust(View view) {
         InputPassword(this, CustTeamActivity.class);
+    }
+
+    public void send(View view) {
+        InputPassword(this, SendActivity.class);
     }
 }
